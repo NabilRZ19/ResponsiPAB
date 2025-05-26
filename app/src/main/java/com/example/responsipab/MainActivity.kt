@@ -6,26 +6,45 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.responsipab.ui.theme.ResponsiPABTheme
+import com.example.responsipab.ui.theme.myBlue
+import com.example.responsipab.ui.theme.myRed
+import com.example.responsipab.ui.theme.myYellow
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +54,7 @@ class MainActivity : ComponentActivity() {
             ResponsiPABTheme(darkTheme = false) {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    bottomBar = { BottomNavigationBar() }
+                    bottomBar = { BottomNavBar() }
                 ) { innerPadding ->
                     MainScreen(modifier = Modifier.padding(innerPadding))
                 }
@@ -45,32 +64,46 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        item {
-            TopBarSection()
-            Spacer(modifier = Modifier.height(8.dp))
-            SearchSection()
-            Spacer(modifier = Modifier.height(8.dp))
-            AddressSection()
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Recommendation Menu", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            RecommendedDishRow()
-            Spacer(modifier = Modifier.height(16.dp))
-            CategoryChips()
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+fun MainScreen(modifier: Modifier) {
+ LazyColumn (
+     modifier = Modifier
+         .systemBarsPadding()
+ ){
+     item { HomeScreen() }
 
-        // Daftar menu makanan
-        items(6) {
-            MenuItemCard()
-            Spacer(modifier = Modifier.height(12.dp))
-        }
+ }
+
+}
+
+@Composable
+fun HomeScreen(){
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxSize()
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp)
+    ) {
+        TopBarSection()
+        Spacer(modifier = Modifier.height(12.dp))
+
+        SearchSection()
+        Spacer(modifier = Modifier.height(12.dp))
+
+        AddressSection()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RecommendedDishRow()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        CategoryOption()
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MenuGrid()
+        Spacer(modifier = Modifier.height(12.dp))
+
     }
 }
 
@@ -78,15 +111,21 @@ fun MainScreen(modifier: Modifier = Modifier) {
 fun TopBarSection() {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
                 .background(Color.LightGray)
+                .clickable {  }
         )
-        Icon(Icons.Default.Notifications, contentDescription = "Notification")
+        Icon(
+            Icons.Outlined.Notifications,
+            contentDescription = "Notification",
+            modifier = Modifier .size(30.dp).clickable {  }
+        )
     }
 }
 
@@ -95,23 +134,37 @@ fun SearchSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFFF5F5F))
+            .clip(RoundedCornerShape(16.dp))
+            .background(myRed)
             .padding(16.dp)
     ) {
-        Text("Good Afternoon, User!", style = MaterialTheme.typography.titleMedium, color = Color.Black)
+        Text("Good Afternoon, User!",
+            color = Color.Black,
+            fontSize = 21.sp,
+            fontWeight = FontWeight.Bold
+        )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = "",
             onValueChange = {},
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
-            placeholder = { Text("Search Menu") },
-            shape = RoundedCornerShape(10.dp),
+            leadingIcon = {
+                Icon(Icons.Default.Search,
+                    contentDescription = "Search",
+                    //modifier = Modifier.size(18.dp)
+                )
+                          },
+            placeholder = {
+                Text(
+                    "Search Menu",
+                    //fontSize = 12.sp
+                )
+                          },
+            shape = RoundedCornerShape(16.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = Color.White,
                 focusedContainerColor = Color.White
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()//.height(35.dp)
         )
     }
 }
@@ -121,18 +174,48 @@ fun AddressSection() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(75.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFFFFDE59))
+            .background(myYellow)
             .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically
+//        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column {
-            Text("Nama Penerima", style = MaterialTheme.typography.labelMedium)
-            Text("Jl. Surakarta no.xx", style = MaterialTheme.typography.bodySmall)
+        Icon(
+            Icons.Filled.Place,
+            contentDescription = "Pin Point",
+            modifier = Modifier
+                .size(31.dp)
+        )
+        Spacer(Modifier.width(12.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Nama Penerima",
+                style = MaterialTheme.typography.labelMedium,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text("Jl. Surakarta no.xx",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp
+
+            )
         }
+        Spacer(Modifier.weight(1f))
+
         Button(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = myBlue,   // Warna background button
+                contentColor = Color.Black        // Warna teks button
+            ),
             onClick = {},
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(36.dp),
+            modifier = Modifier
+                .border(3.dp, Color.Black, shape = RoundedCornerShape(36.dp))
         ) {
             Text("Ganti Alamat")
         }
@@ -141,30 +224,64 @@ fun AddressSection() {
 
 @Composable
 fun RecommendedDishRow() {
+    Text(
+        "Recommended For You",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold
+        )
+    Spacer(modifier = Modifier.height(8.dp))
+
     LazyRow {
-        items(2) {
-            Column(modifier = Modifier.padding(end = 8.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .background(Color.LightGray)
+        items(3) {
+            Button(
+                onClick = {},
+                shape = RectangleShape,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Black,
                 )
-                Text("Dish ${it + 1}")
-                Text("Rp ${if (it == 0) "15.000" else "20.000"}")
+            ) {
+                RecommendedDishItem()
             }
+
         }
     }
 }
 
 @Composable
-fun CategoryChips() {
-    val categories = listOf("Kategori 1", "kategori 2", "kategori 3")
-    LazyRow {
+fun RecommendedDishItem(){
+    Column(modifier = Modifier.padding(end = 8.dp)) {
+        Box(
+            modifier = Modifier
+                .width(240.dp)
+                .height(120.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.LightGray)
+        )
+        Text("Dish ")
+        Text("Rp 10.000")
+    }
+}
+
+@Composable
+fun CategoryOption() {
+    val categories = listOf("Kategori 1", "kategori 2", "kategori 3", "Minuman")
+    Text(
+        "Our Menu",
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold
+
+    )
+    LazyRow(
+        modifier = Modifier
+            .padding(vertical = 16.dp)
+    ) {
         items(categories.size) {
             val color = when (it) {
-                0 -> Color.Red
-                1 -> Color.Cyan
-                2 -> Color(0xFFFFDE59)
+                0 -> myRed
+                1 -> myYellow
+                2 -> myRed
+                4 -> myBlue
                 else -> Color.Gray
             }
             Box(
@@ -172,6 +289,7 @@ fun CategoryChips() {
                     .padding(end = 8.dp)
                     .border(2.dp, color, RoundedCornerShape(20.dp))
                     .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clickable {  }
             ) {
                 Text(categories[it])
             }
@@ -180,8 +298,36 @@ fun CategoryChips() {
 }
 
 @Composable
+fun MenuGrid(){
+    Column {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2), // Menentukan 2 kolom per baris
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(500.dp)
+        ){
+            items(4){
+                Button(
+                    onClick = { /* Handle click */ },
+                    shape = RectangleShape,  // Menghilangkan rounded corners
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent, // Menghilangkan warna latar belakang default
+                        contentColor = Color.Black // Warna konten (teks/icon)
+                    )
+                ) {
+                    MenuItemCard()
+                }
+
+            }
+        }
+
+    }
+
+}
+
+@Composable
 fun MenuItemCard() {
-    Row(modifier = Modifier.fillMaxWidth()) {
+    Column (modifier = Modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
                 .size(120.dp)
@@ -195,35 +341,55 @@ fun MenuItemCard() {
     }
 }
 
-
-
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavBar() {
     Row(
         modifier = Modifier
+            .systemBarsPadding()
             .fillMaxWidth()
-            .height(56.dp)
-            .background(Color.White),
+            .height(50.dp)
+            .background(Color.White)
+            .drawBehind {
+                // Gambar garis di bagian atas
+                drawLine(
+                    color = Color.Gray,
+                    start = Offset(0f, 0f),
+                    end = Offset(size.width, 0f),
+                    strokeWidth = 2f
+                )
+            },
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = { /* TODO: handle Home */ }) {
+        IconButton(
+            onClick = { /* TODO: handle Home */ },
+            modifier = Modifier
+                .size(30.dp)
+        ) {
             Icon(
-                imageVector = Icons.Default.Home,
+                imageVector = Icons.Filled.Home,
                 contentDescription = "Home",
                 tint = Color.Black
             )
         }
-        IconButton(onClick = { /* TODO: handle Cart */ }) {
+        IconButton(
+            onClick = { /* TODO: handle Cart */ },
+            modifier = Modifier
+                .size(30.dp)
+            ) {
             Icon(
-                imageVector = Icons.Default.ShoppingCart,
+                imageVector = Icons.Outlined.ShoppingCart,
                 contentDescription = "Cart",
                 tint = Color.Black
             )
         }
-        IconButton(onClick = { /* TODO: handle Menu */ }) {
+        IconButton(
+            onClick = { /* TODO: handle Menu */ },
+            modifier = Modifier
+                .size(30.dp)
+            ) {
             Icon(
-                imageVector = Icons.Default.Menu,
+                imageVector = Icons.Outlined.Menu,
                 contentDescription = "Menu",
                 tint = Color.Black
             )
