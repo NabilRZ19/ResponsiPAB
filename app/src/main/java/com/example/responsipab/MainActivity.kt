@@ -307,17 +307,7 @@ fun MenuGrid(){
                 .height(500.dp)
         ){
             items(4){
-                Button(
-                    onClick = { /* Handle click */ },
-                    shape = RectangleShape,  // Menghilangkan rounded corners
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent, // Menghilangkan warna latar belakang default
-                        contentColor = Color.Black // Warna konten (teks/icon)
-                    )
-                ) {
                     MenuItemCard()
-                }
-
             }
         }
 
@@ -327,17 +317,27 @@ fun MenuGrid(){
 
 @Composable
 fun MenuItemCard() {
-    Column (modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .size(120.dp)
-                .background(Color.LightGray)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Text("Nama Menu")
-            Text("Rp 10.000")
+    Column (
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Green)
+            .clickable {  },
+        horizontalAlignment = Alignment.CenterHorizontally
+
+    ) {
+        Column(){
+            Box(
+                modifier = Modifier
+                    .size(130.dp)
+                    .background(Color.LightGray)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text("Nama Menu")
+                Text("Rp 10.000")
+            }
         }
+
     }
 }
 
